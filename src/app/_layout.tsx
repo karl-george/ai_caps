@@ -55,9 +55,7 @@ const InitialLayout = () => {
     }
   }, [fontsLoaded]);
 
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
+  useEffect(() => {}, [user]);
 
   if (!fontsLoaded) {
     return null;
