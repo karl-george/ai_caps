@@ -1,6 +1,11 @@
 import { emailAtom } from '@/store/login';
 import { twFullConfig } from '@/utils/twconfig';
-import { useSignIn, useSignUp, useSSO } from '@clerk/clerk-expo';
+import {
+  isClerkAPIResponseError,
+  useSignIn,
+  useSignUp,
+  useSSO,
+} from '@clerk/clerk-expo';
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Checkbox } from 'expo-checkbox';
@@ -9,6 +14,7 @@ import { useSetAtom } from 'jotai';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Linking,
   Text,
@@ -32,11 +38,66 @@ const Page = () => {
 
   const handleSignInWithSSO = async (
     strategy: 'oauth_google' | 'oauth_apple'
-  ) => {};
+  ) => {
+    if (strategy === 'oauth_google' || strategy === 'oauth_apple') {
+      setLoading(strategy.replace('oauth_', '') as 'google' | 'apple');
+    } else {
+      setLoading(false);
+    }
 
-  const handleEmailOTP = async () => {};
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy,
+      });
 
-  const signInWithEmail = async () => {};
+      if (createdSessionId) {
+        setActive!({ session: createdSessionId });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailOTP = async () => {
+    try {
+      setLoading('email');
+      setEmailAtom(email);
+      await signUp?.create({
+        emailAddress: email,
+      });
+      await signUp!.prepareEmailAddressVerification({ strategy: 'email_code' });
+      router.push('/verify');
+    } catch (err) {
+      if (isClerkAPIResponseError(err)) {
+        if (err.status === 422) {
+          // If email address already exists
+          signInWithEmail();
+        } else {
+          Alert.alert('Error', 'Something went wrong!');
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithEmail = async () => {
+    try {
+      setLoading('email');
+      const signInAttempt = await signIn?.create({
+        strategy: 'email_code',
+        identifier: email,
+      });
+
+      router.push('/verify?isLogin=true');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLinkPress = (linkType: 'terms' | 'privacy') => {
     Linking.openURL(linkType === 'terms' ? 'google.com' : 'google.com');
@@ -105,7 +166,7 @@ const Page = () => {
         </View>
 
         <TouchableOpacity
-          onPress={signInWithEmail}
+          onPress={handleEmailOTP}
           disabled={!email || !isTermsChecked || loading === 'email'}
           className={`w-full py-4 rounded-lg mt-10 mb-14 ${
             !email || !isTermsChecked || loading === 'email'
