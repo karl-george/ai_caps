@@ -6,7 +6,7 @@ const Profile = () => {
   const { signOut } = useAuth();
 
   return (
-    <View>
+    <View className='flex-1 bg-dark'>
       <Text>Profile</Text>
       <Button title='Logout' onPress={() => signOut} />
     </View>
