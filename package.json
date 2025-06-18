@@ -19,6 +19,7 @@
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
+    "@sentry/react-native": "^6.15.1",
     "convex": "^1.24.8",
     "expo": "53.0.11",
     "expo-audio": "~0.4.6",

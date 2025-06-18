@@ -72,7 +72,15 @@
         }
       ],
       "expo-video",
-      "expo-audio"
+      "expo-audio",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "ai_caps",
+          "organization": "other-b2b"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

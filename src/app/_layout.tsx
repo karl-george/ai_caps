@@ -25,6 +25,27 @@ import { useEffect } from 'react';
 import { LogBox, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://34a5b09199cdb286c6153f3f17a83f52@o4508993433305088.ingest.de.sentry.io/4509518719352912',
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // Configure Session Replay
+  replaysSessionSampleRate: 1,
+  replaysOnErrorSampleRate: 1,
+  integrations: [
+    Sentry.mobileReplayIntegration(),
+    Sentry.feedbackIntegration(),
+  ],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
+
 SplashScreen.preventAutoHideAsync();
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
@@ -55,7 +76,16 @@ const InitialLayout = () => {
     }
   }, [fontsLoaded]);
 
-  useEffect(() => {}, [user]);
+  useEffect(() => {
+    if (user && user.user) {
+      Sentry.setUser({
+        email: user.user.emailAddresses[0].emailAddress,
+        id: user.user.id,
+      });
+    } else {
+      Sentry.setUser(null);
+    }
+  }, [user]);
 
   if (!fontsLoaded) {
     return null;
@@ -84,4 +114,4 @@ const RootLayout = () => {
   );
 };
 
-export default RootLayout;
+export default Sentry.wrap(RootLayout);
