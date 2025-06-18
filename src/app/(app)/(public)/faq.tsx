@@ -1,9 +1,17 @@
-import { Text, View } from 'react-native';
+import FAQ from '@/components/FAQ';
+import { View } from 'react-native';
 
 const Page = () => {
   return (
-    <View>
-      <Text>Page</Text>
+    <View className='flex-1'>
+      <FAQ
+        dom={{
+          scrollEnabled: false,
+          style: {
+            backgroundColor: 'black',
+          },
+        }}
+      />
     </View>
   );
 };
