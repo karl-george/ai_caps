@@ -4,9 +4,9 @@ import { Text, View } from 'react-native';
 
 const Projects = () => {
   return (
-    <View>
+    <View className='flex-1 bg-dark'>
       <Link href='/create' asChild>
-        <Text>Create</Text>
+        <Text className='text-white'>Create</Text>
       </Link>
     </View>
   );
