@@ -5,6 +5,7 @@ import {
   useAuth,
   useUser,
 } from '@clerk/clerk-expo';
+import { passkeys } from '@clerk/clerk-expo/passkeys';
 import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import {
   Poppins_400Regular,
@@ -18,14 +19,13 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
+import * as Sentry from '@sentry/react-native';
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
 import { Slot, SplashScreen } from 'expo-router';
 import { useEffect } from 'react';
 import { LogBox, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-import * as Sentry from '@sentry/react-native';
 
 Sentry.init({
   dsn: 'https://34a5b09199cdb286c6153f3f17a83f52@o4508993433305088.ingest.de.sentry.io/4509518719352912',
@@ -98,7 +98,11 @@ const RootLayout = () => {
   const colorScheme = useColorScheme();
 
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+    <ClerkProvider
+      publishableKey={publishableKey}
+      tokenCache={tokenCache}
+      __experimental_passkeys={passkeys}
+    >
       <ClerkLoaded>
         <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
           <GestureHandlerRootView style={{ flex: 1 }}>

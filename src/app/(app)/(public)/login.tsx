@@ -103,6 +103,20 @@ const Page = () => {
     Linking.openURL(linkType === 'terms' ? 'google.com' : 'google.com');
   };
 
+  const signInWithPasskey = async () => {
+    try {
+      const signInAttempt = await signIn?.authenticateWithPasskey({
+        flow: 'discoverable',
+      });
+
+      if (signInAttempt?.status === 'complete') {
+        await setActive!({ session: signInAttempt.createdSessionId });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <View className='flex-1 bg-black pt-safe'>
       <View className='flex-1 p-6'>
@@ -218,6 +232,11 @@ const Page = () => {
               </Text>
             </>
           )}
+        </TouchableOpacity>
+        <TouchableOpacity onPress={signInWithPasskey}>
+          <Text className='ml-3 text-base text-center text-white font-Poppins_600SemiBold'>
+            Continue with Passkey
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
