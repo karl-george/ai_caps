@@ -1,6 +1,6 @@
 import { v } from 'convex/values';
-import { mutation } from './_generated/server';
-import { getUser } from './auth';
+import { mutation, query } from './_generated/server';
+import { authorizeProject, getUser } from './auth';
 
 // Generate a URL to upload a video file
 export const generateUploadUrl = mutation({
@@ -28,5 +28,25 @@ export const createProject = mutation({
       videoFileId: args.videoFileId,
       status: 'pending',
     });
+  },
+});
+
+export const listProjects = query({
+  args: { projectId: v.id('projects') },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx);
+
+    return await ctx.db
+      .query('projects')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
+      .collect();
+  },
+});
+
+export const getProject = query({
+  args: { projectId: v.id('projects') },
+  handler: async (ctx, args) => {
+    const { project } = await authorizeProject(ctx, args.projectId);
+    return project;
   },
 });
