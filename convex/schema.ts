@@ -23,5 +23,7 @@ export default defineSchema({
       v.literal('ready'),
       v.literal('failed')
     ),
-  }),
+  })
+    .index('by_lastUpdate', ['lastUpdate'])
+    .index('by_user', ['userId']),
 });
