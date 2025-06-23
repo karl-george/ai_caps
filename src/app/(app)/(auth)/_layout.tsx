@@ -51,6 +51,27 @@ const Layout = () => {
             headerTitleAlign: 'center',
           }}
         />
+        <Stack.Screen
+          name='(modal)/project/[id]'
+          options={{
+            presentation: 'fullScreenModal',
+            animation: 'fade',
+            headerLeft: () => (
+              <Pressable onPress={() => router.dismissAll()}>
+                <Ionicons name='close' size={24} color='#fff' />
+              </Pressable>
+            ),
+            // headerTransparent: true,
+            headerTitleStyle: {
+              color: '#fff',
+              fontFamily: 'Poppins_600SemiBold',
+            },
+            headerStyle: {
+              backgroundColor: (twFullConfig.theme.colors as any).dark,
+            },
+            headerTitleAlign: 'center',
+          }}
+        />
       </Stack.Protected>
     </Stack>
   );
