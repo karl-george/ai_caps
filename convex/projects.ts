@@ -31,16 +31,12 @@ export const createProject = mutation({
   },
 });
 
-export const listProjects = query({
-  args: { projectId: v.id('projects') },
-  handler: async (ctx, args) => {
-    const user = await getUser(ctx);
-
-    return await ctx.db
-      .query('projects')
-      .withIndex('by_user', (q) => q.eq('userId', user._id))
-      .collect();
-  },
+export const listProjects = query(async (ctx) => {
+  const user = await getUser(ctx);
+  return await ctx.db
+    .query('projects')
+    .withIndex('by_user', (q) => q.eq('userId', user._id))
+    .collect();
 });
 
 export const getProject = query({
