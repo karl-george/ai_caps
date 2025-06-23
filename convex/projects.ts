@@ -1,4 +1,4 @@
-import { v } from 'convex/values';
+import { ConvexError, v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 import { authorizeProject, getUser } from './auth';
 
@@ -44,5 +44,15 @@ export const getProject = query({
   handler: async (ctx, args) => {
     const { project } = await authorizeProject(ctx, args.projectId);
     return project;
+  },
+});
+
+export const getFileUrl = query({
+  args: { id: v.optional(v.id('_storage')) },
+  handler: async (ctx, args) => {
+    if (!args.id) {
+      throw new ConvexError(`No file id provided`);
+    }
+    return await ctx.storage.getUrl(args.id);
   },
 });
