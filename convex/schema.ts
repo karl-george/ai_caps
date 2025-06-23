@@ -11,11 +11,11 @@ export const User = {
 export default defineSchema({
   user: defineTable(User).index('byExternalId', ['externalId']),
   projects: defineTable({
-    userId: v.id('user'),
+    userId: v.id('user'), // Reference to the user who owns this project
     name: v.string(),
-    lastUpdate: v.number(),
-    videoSize: v.number(),
-    videoFileId: v.id('_storage'),
+    lastUpdate: v.number(), // Unix timestamp
+    videoSize: v.number(), // in bytes
+    videoFileId: v.id('_storage'), // Reference to stored video file
     language: v.optional(v.string()),
     status: v.union(
       v.literal('pending'),
