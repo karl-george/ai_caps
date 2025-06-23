@@ -86,7 +86,7 @@ const Page = () => {
   const signInWithEmail = async () => {
     try {
       setLoading('email');
-      const signInAttempt = await signIn?.create({
+      await signIn?.create({
         strategy: 'email_code',
         identifier: email,
       });
