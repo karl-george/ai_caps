@@ -33,6 +33,7 @@ const Layout = () => {
           name='(modal)/filelist'
           options={{
             presentation: 'fullScreenModal',
+            animation: 'fade_from_bottom',
             headerLeft: () => (
               <Pressable onPress={() => router.dismissAll()}>
                 <Ionicons name='close' size={24} color='#fff' />
