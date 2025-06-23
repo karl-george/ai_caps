@@ -1,4 +1,5 @@
 import { ConvexError } from 'convex/values';
+import { Id } from './_generated/dataModel';
 import { MutationCtx, QueryCtx } from './_generated/server';
 
 /**
@@ -33,21 +34,21 @@ export async function getUser(ctx: QueryCtx | MutationCtx) {
  * 2. The project doesn't exist
  * 3. The user doesn't own the project
  */
-// export async function authorizeProject(
-//   ctx: QueryCtx | MutationCtx,
-//   projectId: Id<'projects'>
-// ) {
-//   const user = await getUser(ctx);
+export async function authorizeProject(
+  ctx: QueryCtx | MutationCtx,
+  projectId: Id<'projects'>
+) {
+  const user = await getUser(ctx);
 
-//   const project = await ctx.db.get(projectId);
+  const project = await ctx.db.get(projectId);
 
-//   if (!project) {
-//     throw new ConvexError('Project not found');
-//   }
+  if (!project) {
+    throw new ConvexError('Project not found');
+  }
 
-//   if (project.userId !== user._id) {
-//     throw new ConvexError("You don't have access to this project");
-//   }
+  if (project.userId !== user._id) {
+    throw new ConvexError("You don't have access to this project");
+  }
 
-//   return { user, project };
-// }
+  return { user, project };
+}
