@@ -1,3 +1,4 @@
+import VideoControls from '@/components/VideoControls';
 import { formatTime } from '@/utils/formatDuration';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useQuery } from 'convex/react';
@@ -105,6 +106,13 @@ const Page = () => {
           <View style={{ width: 40 }} />
         </View>
       </View>
+      <VideoControls
+        isGenerating={isGenerating}
+        projectStatus={project.status}
+        onGenerateCaptions={() => {}}
+        onShowCaptionControls={() => {}}
+        onShowScriptModal={() => {}}
+      />
     </View>
   );
 };
