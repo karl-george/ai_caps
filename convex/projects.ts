@@ -56,3 +56,48 @@ export const getFileUrl = query({
     return await ctx.storage.getUrl(args.id);
   },
 });
+
+export const update = mutation({
+  args: {
+    id: v.id('projects'),
+    name: v.optional(v.string()),
+    status: v.union(
+      v.literal('pending'),
+      v.literal('processing'),
+      v.literal('ready'),
+      v.literal('failed')
+    ),
+    captions: v.optional(
+      v.array(
+        v.object({
+          text: v.string(),
+          start: v.number(),
+          end: v.number(),
+          type: v.union(
+            v.literal('word'),
+            v.literal('spacing'),
+            v.literal('audio_event')
+          ),
+          speaker_id: v.string(),
+        })
+      )
+    ),
+    language: v.optional(v.string()),
+    error: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+
+    const existign = await ctx.db.get(id);
+
+    if (!existign) {
+      throw new ConvexError(`Project not found`);
+    }
+
+    if (updates.captions) {
+      updates.status = 'ready';
+    }
+
+    return await ctx.db.patch(id, { ...updates, lastUpdate: Date.now() });
+  },
+});
