@@ -1,7 +1,7 @@
 import VideoControls from '@/components/VideoControls';
 import { formatTime } from '@/utils/formatDuration';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { useEvent } from 'expo';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
@@ -19,6 +19,8 @@ const Page = () => {
   const project = useQuery(api.projects.getProject, {
     projectId: id as Id<'projects'>,
   });
+
+  const updateProject = useMutation(api.projects.update);
 
   const fileUrl = useQuery(
     api.projects.getFileUrl,
@@ -56,6 +58,25 @@ const Page = () => {
   }
 
   const onExportVideo = async () => {};
+
+  const handleGenerateCaptions = async () => {
+    if (!project) return;
+
+    try {
+      setIsGenerating(true);
+
+      // Update project to processing
+      await updateProject({ id: project._id, status: 'processing' });
+
+      // Call Elevenlabs API to generate captions
+
+      // Update project with captions
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <View className='flex-1 p-4 bg-dark'>
@@ -109,7 +130,7 @@ const Page = () => {
       <VideoControls
         isGenerating={isGenerating}
         projectStatus={project.status}
-        onGenerateCaptions={() => {}}
+        onGenerateCaptions={handleGenerateCaptions}
         onShowCaptionControls={() => {}}
         onShowScriptModal={() => {}}
       />
