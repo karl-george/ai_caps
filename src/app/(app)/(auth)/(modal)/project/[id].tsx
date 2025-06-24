@@ -1,12 +1,12 @@
 import VideoControls from '@/components/VideoControls';
 import { formatTime } from '@/utils/formatDuration';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useMutation, useQuery } from 'convex/react';
+import { useAction, useMutation, useQuery } from 'convex/react';
 import { useEvent } from 'expo';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { api } from '~/convex/_generated/api';
 import { Id } from '~/convex/_generated/dataModel';
 
@@ -21,6 +21,7 @@ const Page = () => {
   });
 
   const updateProject = useMutation(api.projects.update);
+  const processVideo = useAction(api.elevenlabs.processVideo);
 
   const fileUrl = useQuery(
     api.projects.getFileUrl,
@@ -69,10 +70,24 @@ const Page = () => {
       await updateProject({ id: project._id, status: 'processing' });
 
       // Call Elevenlabs API to generate captions
+      const videoId = await project.videoFileId;
+
+      const result = await processVideo({ videoId });
 
       // Update project with captions
+      await updateProject({
+        id: project._id,
+        captions: result.words,
+        language: result.language_code,
+        status: 'ready',
+      });
     } catch (error) {
       console.log(error);
+      await updateProject({
+        id: project._id,
+        status: 'failed',
+        error: error instanceof Error ? error.message : 'Something went wrong',
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -134,6 +149,24 @@ const Page = () => {
         onShowCaptionControls={() => {}}
         onShowScriptModal={() => {}}
       />
+
+      {isExporting && (
+        <View className='absolute inset-0 justify-center items-center bg-dark/50'>
+          <ActivityIndicator size='large' color='#fff' />
+          <Text className='mt-4 text-lg text-white font-Poppins_500Medium'>
+            Exporting video...
+          </Text>
+        </View>
+      )}
+
+      {isGenerating && (
+        <View className='absolute inset-0 justify-center items-center bg-dark/50'>
+          <ActivityIndicator size='large' color='#fff' />
+          <Text className='mt-4 text-lg text-white font-Poppins_500Medium'>
+            Generating captions...
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
